@@ -16,12 +16,18 @@ To generate C code please ensure that you have https://github.com/dronecan/pydro
 https://github.com/dronecan/libcanard cloned alongside this project. Then run the following 
 command:
 ```
-python dronecan_dsdlc/dronecan_dsdlc.py -O <output directory> <list of namespace dirs>
+python dronecan_dsdlc/dronecan_dsdlc.py -l c -O <output directory> <list of namespace dirs>
 # e.g. python dronecan_dsdlc/dronecan_dsdlc.py -O dsdlc_generated libraries/AP_UAVCAN/dsdl/ardupilot DSDL/uavcan
 ```
 
 To run the test simply execute the following command
 
 ```
-python dronecan_dsdlc/dronecan_dsdlc.py -O <output directory> <list of namespace dirs> --run-test
+python dronecan_dsdlc/dronecan_dsdlc.py -l c -O <output directory> <list of namespace dirs> --run-test
+```
+
+To generate Markdown file execute following command
+
+```
+python dronecan_dsdlc.py -l md -O <input directories>
 ```

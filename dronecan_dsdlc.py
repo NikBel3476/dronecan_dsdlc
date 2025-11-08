@@ -28,6 +28,9 @@ except Exception as ex:
 from dronecan_dsdlc_helpers import *
 from dronecan_dsdlc_tester import *
 
+LANGUAGES = ['c', 'md']
+MD_FILE_NAME = 'dsdl.md'
+
 templates = [
     {'type': 'request_header',
      'output_file': 'include/@(msg_header_name_request(msg))'},
@@ -61,6 +64,7 @@ test_templates = [
 ]
 
 parser = argparse.ArgumentParser()
+parser.add_argument('-l', '--language', action='store', required=True, choices=LANGUAGES)
 parser.add_argument('--output', '-O', action='store')
 parser.add_argument('--build', action='append')
 parser.add_argument('--run-tests', action='store_true')
@@ -81,6 +85,25 @@ templates_dir = os.path.join(os.path.dirname(__file__), 'templates')
 messages = dronecan.dsdl.parse_namespaces(namespace_paths)
 message_dict = {}
 builtlist = set()
+
+if args.language == 'md':
+    mkdir_p(build_dir)
+    with open(os.path.join(build_dir, MD_FILE_NAME), 'wb') as md_file:
+        namespace = ''
+        for msg in messages:
+            msg_namespace = '.'.join(msg.full_name.split('.')[:-1])
+            if namespace != msg_namespace:
+                namespace = msg_namespace
+                md_file.write(f'# Namespace `{namespace}`\n\n'.encode())
+
+            md_file.write(f'## Full name `{msg.full_name}`\n\n'.encode())
+            if msg.version:
+                md_file.write(f'Version `{msg.version}`\n\n'.encode())
+            if msg.default_dtid:
+                md_file.write(f'dtid `{msg.default_dtid}`\n\n'.encode())
+            md_file.write(f'```\n{msg.source_text}\n```\n\n'.encode())
+    print('Markdown successfully generated')
+    exit(0)
 
 for msg in messages:
     message_dict[msg.full_name] = msg
