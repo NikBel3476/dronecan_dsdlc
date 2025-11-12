@@ -12,6 +12,7 @@ import argparse
 import em
 import shutil
 import time
+from functools import reduce
 
 try:
     import dronecan.dsdl
@@ -89,6 +90,31 @@ builtlist = set()
 if args.language == 'md':
     mkdir_p(build_dir)
     with open(os.path.join(build_dir, MD_FILE_NAME), 'wb') as md_file:
+        # Table of contents
+        namespace = ''
+        for msg in messages:
+            msg_namespace_list = msg.full_name.split('.')[:-1]
+            indentation = ''
+            for namespaces in zip(msg_namespace_list, namespace.split('.')):
+                if namespaces[0] == namespaces[1]:
+                    indentation += '  '
+                else:
+                    break
+
+            msg_namespace = '.'.join(msg_namespace_list)
+            if namespace != msg_namespace:
+                namespace = msg_namespace
+                md_file.write(f'{indentation}* [Namespace `{namespace}`](#namespace-{namespace.replace('.', '').lower()})\n'.encode())
+            else:
+                indentation = indentation[:-2]
+            
+            md_file.write(
+                f'  {indentation}* [Message `{msg.full_name} {msg.default_dtid if msg.default_dtid else ''}`](#full-name-{msg.full_name.replace('.', '').lower()})\n'
+                    .encode()
+            )
+
+        md_file.write('\n'.encode())
+
         namespace = ''
         for msg in messages:
             msg_namespace = '.'.join(msg.full_name.split('.')[:-1])
