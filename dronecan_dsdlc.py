@@ -91,36 +91,43 @@ if args.language == 'md':
     mkdir_p(build_dir)
     with open(os.path.join(build_dir, MD_FILE_NAME), 'wb') as md_file:
         # Table of contents
-        namespace = ''
+        current_namespace = []
+        # indentation = ''
         for msg in messages:
-            msg_namespace_list = msg.full_name.split('.')[:-1]
-            indentation = ''
-            for namespaces in zip(msg_namespace_list, namespace.split('.')):
-                if namespaces[0] == namespaces[1]:
-                    indentation += '  '
-                else:
-                    break
+            msg_namespace = msg.full_name.split('.')[:-1]
 
-            msg_namespace = '.'.join(msg_namespace_list)
-            if namespace != msg_namespace:
-                namespace = msg_namespace
-                md_file.write(f'{indentation}* [Namespace `{namespace}`](#namespace-{namespace.replace('.', '').lower()})\n'.encode())
-            else:
-                indentation = indentation[:-2]
-            
+            if current_namespace != msg_namespace:
+                # indentation = ''
+                # for namespaces in zip(msg_namespace, current_namespace):
+                #     if namespaces[0] == namespaces[1]:
+                #         indentation += '  '
+                #     else:
+                #         break
+                current_namespace = msg_namespace
+                current_namespace_str = '.'.join(current_namespace)
+                # md_file.write(f'{indentation}* [Namespace `{'.'.join(current_namespace)}`](#namespace-{''.join(current_namespace).lower()})\n'.encode())
+                md_file.write(f'* [Namespace `{current_namespace_str}`](#namespace-{current_namespace_str.replace('.', '').lower()})\n'.encode())
+            # else:
+            #     indentation = indentation[:-2]
+
+            # md_file.write(
+            #     f'  {indentation}* [Message `{msg.full_name} {msg.default_dtid if msg.default_dtid else ''}`](#full-name-{msg.full_name.replace('.', '').lower()})\n'
+            #         .encode()
+            # )
             md_file.write(
-                f'  {indentation}* [Message `{msg.full_name} {msg.default_dtid if msg.default_dtid else ''}`](#full-name-{msg.full_name.replace('.', '').lower()})\n'
+                f'  * [Message `{msg.full_name} {msg.default_dtid if msg.default_dtid else ''}`](#full-name-{msg.full_name.replace('.', '').lower()})\n'
                     .encode()
             )
 
         md_file.write('\n'.encode())
 
-        namespace = ''
+        # Messages description
+        current_namespace = []
         for msg in messages:
-            msg_namespace = '.'.join(msg.full_name.split('.')[:-1])
-            if namespace != msg_namespace:
-                namespace = msg_namespace
-                md_file.write(f'# Namespace `{namespace}`\n\n'.encode())
+            msg_namespace = msg.full_name.split('.')[:-1]
+            if current_namespace != msg_namespace:
+                current_namespace = msg_namespace
+                md_file.write(f'# Namespace `{'.'.join(current_namespace)}`\n\n'.encode())
 
             md_file.write(f'## Full name `{msg.full_name}`\n\n'.encode())
             if msg.version:
