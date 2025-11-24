@@ -115,7 +115,7 @@ if args.language == 'md':
             #         .encode()
             # )
             md_file.write(
-                f'  * [Message `{msg.full_name} {msg.default_dtid if msg.default_dtid else ''}`](#full-name-{msg.full_name.replace('.', '').lower()})\n'
+                f'  * [{msg.default_dtid if msg.default_dtid else ''} `{msg.full_name}`](#full-name-{msg.full_name.replace('.', '').lower()})\n'
                     .encode()
             )
 
